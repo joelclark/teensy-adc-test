@@ -29,7 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <ADC.h>
 
-#define PING_TIMEOUT 5000
+#define PROBE_SAMPLE_TIME 50
+#define PING_TIMEOUT 2000
 #define SLOW_PIN_COUNT 7
 
 float calculate(uint16_t steps);
@@ -64,9 +65,9 @@ void setup()
 
     adc->setReference(ADC_REFERENCE::REF_3V3);
 
-    adc->setAveraging(1);
+    adc->setAveraging(32);
     adc->setResolution(12);
-    adc->setConversionSpeed(ADC_CONVERSION_SPEED::HIGH_SPEED);
+    adc->setConversionSpeed(ADC_CONVERSION_SPEED::LOW_SPEED);
 }
 
 void loop()
@@ -79,8 +80,11 @@ void loop()
 
     if (timeSinceLastPing < PING_TIMEOUT)
     {
-        measure(fast_pin, 25);
-        measure(slow_pins[slow_pin_index++], 25);
+        measure(fast_pin, PROBE_SAMPLE_TIME);
+        measure(slow_pins[slow_pin_index++], PROBE_SAMPLE_TIME);
+
+        //measure(A2, 25);
+        //measure(A3, 25);
 
         if (slow_pin_index >= SLOW_PIN_COUNT)
         {
